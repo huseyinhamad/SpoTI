@@ -1,18 +1,26 @@
 import os
 import pandas as pd
 
+
 def getCurrentUserId(sp):
     result = sp.current_user()
     userId = result['id']
     return userId
 
 
-def getTrackIds(tracks):
+def getTrackDetails(tracks):
     trackIds = []
+    trackNames = []
+    playlistNames =[]
     for i in range(len(tracks)):
         trackIds.append(tracks[i]['id'])
-    return trackIds
+        trackNames.append(tracks[i]['name'])
+        playlistNames.append(tracks[i]['playlistName'])
+    return trackIds, trackNames, playlistNames
 
+def getTrackName(sp, trackId):
+    track = sp.track(trackId)
+    return track['name']
 
 def getCurrentPlaying(sp):
     result = sp.currently_playing()
@@ -30,28 +38,36 @@ def getUserPlaylists(sp):
         userPlaylistsNames.append(item['name'])
     return userPlaylistsIds, userPlaylistsNames
 
+
 def getAllPlaylistTracks(sp, playlistIds, playlistNames):
     allPlaylistsTracks = []
     for i in range(len(playlistIds)):
         results = sp.playlist_tracks(playlist_id=playlistIds[i])
         for _, item in enumerate(results['items']):
+            item['track']['playlistName'] = playlistNames[i]
             allPlaylistsTracks.append(item["track"])
     return allPlaylistsTracks
 
+
 def getTrackFeatures(sp, tracks):
-    trackIds = getTrackIds(tracks)
+    trackIds, trackNames, playlistNames = getTrackDetails(tracks)
     trackFeaturesArr = []
     print("Number of Total Tracks:", len(trackIds))
-    if (len(trackIds) <= 100):
+    if len(trackIds) <= 100:
         trackFeatures = sp.audio_features(trackIds)
         trackFeaturesArr.append(trackFeatures)
     else:
+        count = 0
         lowerLimit = 0
         upperLimit = 100
         howManyReruns = int(len(trackIds) / 100) + 1
         print(howManyReruns)
         for i in range(howManyReruns):
             trackFeatures = sp.audio_features(trackIds[lowerLimit:upperLimit])
+            for trackFeature in trackFeatures:
+                trackFeature['trackName'] = trackNames[count]
+                trackFeature['playlistName'] = playlistNames[count]
+                count += 1
             for k in range(len(trackFeatures)):
                 trackFeaturesArr.append(trackFeatures[k])
             upperLimit += 100
