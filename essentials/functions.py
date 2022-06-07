@@ -25,11 +25,15 @@ def getTrackName(sp, trackId):
     return track['name']
 
 def getCurrentPlaying(sp):
-    result = sp.currently_playing()
-    if result is not None:
+    currentPlayback = getCurrenctPlayback(sp)
+    if currentPlayback['is_playing'] == True:
+        result = sp.currently_playing()
         track = result['item']
         print("\nCurrent Playing =", track['artists'][0]['name'], "–", track['name'])
 
+def getCurrenctPlayback(sp):
+    currentPlayback = sp.current_playback()
+    return currentPlayback
 
 def getUserPlaylists(sp):
     userPlaylistsIds = []

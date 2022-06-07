@@ -14,6 +14,6 @@ if __name__ == '__main__':
         print(userPlaylistsIDs[i], ":", userPlaylistsNames[i])
 
     allPlaylistsTracks = funcs.getAllPlaylistTracks(sp, playlistIds=userPlaylistsIDs, playlistNames=userPlaylistsNames)
-    trackFeatures = funcs.getTrackFeatures(sp, allPlaylistsTracks)
+    trackFeatures = funcs.getTrackFeatures(sp, tracks=allPlaylistsTracks)
     dfTrackFeatures = funcs.convertTrackFeaturesToDataFrame(trackFeatures)
     print(dfTrackFeatures.tail())
