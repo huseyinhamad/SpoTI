@@ -11,12 +11,14 @@ def getCurrentUserId(sp):
 def getTrackDetails(tracks):
     trackIds = []
     trackNames = []
-    playlistNames =[]
+    trackArtists = []
+    playlistNames = []
     for i in range(len(tracks)):
         trackIds.append(tracks[i]['id'])
         trackNames.append(tracks[i]['name'])
+        trackArtists.append(tracks[i]['artists'][0]['name'])
         playlistNames.append(tracks[i]['playlistName'])
-    return trackIds, trackNames, playlistNames
+    return trackIds, trackNames, trackArtists, playlistNames
 
 def getTrackName(sp, trackId):
     track = sp.track(trackId)
@@ -24,8 +26,9 @@ def getTrackName(sp, trackId):
 
 def getCurrentPlaying(sp):
     result = sp.currently_playing()
-    track = result['item']
-    print("\nCurrent Playing =", track['artists'][0]['name'], "–", track['name'])
+    if result is not None:
+        track = result['item']
+        print("\nCurrent Playing =", track['artists'][0]['name'], "–", track['name'])
 
 
 def getUserPlaylists(sp):
@@ -50,7 +53,7 @@ def getAllPlaylistTracks(sp, playlistIds, playlistNames):
 
 
 def getTrackFeatures(sp, tracks):
-    trackIds, trackNames, playlistNames = getTrackDetails(tracks)
+    trackIds, trackNames, trackArtists, playlistNames = getTrackDetails(tracks)
     trackFeaturesArr = []
     print("Number of Total Tracks:", len(trackIds))
     if len(trackIds) <= 100:
@@ -66,6 +69,7 @@ def getTrackFeatures(sp, tracks):
             trackFeatures = sp.audio_features(trackIds[lowerLimit:upperLimit])
             for trackFeature in trackFeatures:
                 trackFeature['trackName'] = trackNames[count]
+                trackFeature['trackArtist'] = trackArtists[count]
                 trackFeature['playlistName'] = playlistNames[count]
                 count += 1
             for k in range(len(trackFeatures)):
